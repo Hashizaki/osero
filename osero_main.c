@@ -6,8 +6,10 @@
 #define B 1
 #define W 2
 
-const int vec_x[]={-1,-1,0,1,1,1,0,-1};
-const int vec_y[]={0,1,1,1,0,-1,-1,-1};
+const int vec_x[8]={-1,-1,0,1,1,1,0,-1};
+const int vec_y[8]={0,1,1,1,0,-1,-1,-1};
+int sflag[8]; //その方向に返せるかどうかのフラグ
+int svec[8]; //返せる駒数 格納
 int board[NUM][NUM]={{OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT},
 		     {OUT,NO,NO,NO,NO,NO,NO,NO,NO,OUT}, 
 		     {OUT,NO,NO,NO,NO,NO,NO,NO,NO,OUT}, 
@@ -19,7 +21,6 @@ int board[NUM][NUM]={{OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT},
 		     {OUT,NO,NO,NO,NO,NO,NO,NO,NO,OUT},
 		     {OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT}};
 int turn=1; //turn_count
-//int s_g=1; //先手,後手_count
 
 typedef enum{
   Start,End,Exit,Set
@@ -38,7 +39,7 @@ typedef struct{
 void init(player1 *pl1,player2 *pl2);
 void display(player1 *pl1,player2 *pl2);
 void Input(int *x,int *y);
-int Search_1(void);
+int Search_1(int *x,int *y);
 int Search_2(void);
 int Select(void);
 int Put(void);
@@ -46,12 +47,15 @@ int Change(void);
   
 main(){
   Menu menu;
-  
+  int x,y;
   player1 pl1;
   player2 pl2;
 
   init(&pl1,&pl2);
+  //while
   display(&pl1,&pl2);
+  Input(&x,&y);
+  Search_1(&x,&y);
 
   turn++;
 }
@@ -67,8 +71,8 @@ void init(player1 *pl1,player2 *pl2){
   pl1->count=0;
   pl2->count=0;
 
-  printf("player1_name:"); gets(pl1->name); // scanf("%s",pl1.name);
-  printf("player2_name:"); gets(pl2->name); // scanf("%s",pl2.name); 
+  //printf("player1_name:"); gets(pl1->name); // scanf("%s",pl1.name);
+  //printf("player2_name:"); gets(pl2->name); // scanf("%s",pl2.name); 
 
   //debug
   //     printf("pl1.na:%s,pl2.na:%s,pl1.co:%d,pl2.co:%d",pl1.name,pl2.name,pl1.count,pl2.count);
@@ -76,8 +80,8 @@ void init(player1 *pl1,player2 *pl2){
 
 void display(player1 *pl1,player2 *pl2){
   int i,j;
-  if(turn%2 == 1) printf("%sの番(●)です.\n",pl1->name);
-  else printf("%sの番(○)です.\n",pl2->name);
+  if(turn%2 == 1) printf("%sの番(● )です.\n",pl1->name);
+  else printf("%sの番(○ )です.\n",pl2->name);
  
   for(i=1;i<9;i++){
     for(j=1;j<9;j++){
@@ -102,14 +106,29 @@ void Input(int *x,int *y){
 
 int Search_1(int *x,int *y){ //B
   int i,j;
-
-  switch(borad[x][y]){
+  switch(board[*x][*y]){
   case B: puts("err : おけません"); return(-1);
   case W: puts("err : おけません"); return(-1);
   case NO:
-    for(i=1;i<NUM;i++){
+    //探索前のチェック
+    for(i=0;i<8;i++)
       for(j=0;j<8;j++){
-	if(borad[*x + vec_x[j]][*y + vec_y[j]] == NO) break;
-	else if(borad[*x + vec_x[j]][*y + vec_y[j]] == B) break;
-	else 
+	if((board[*x + vec_x[j]][*y + vec_y[j]] != NO) && (board[*x + vec_x[j]][*y + vec_y[j]] != B)){
+	  sflag[i]=1;
+	}
+      }
+    printf("debug:%d\n",sflag[i]);
+  }
+
+  for(i=0;i<8;i++){
+    for(j=0;j<8;j++){
+      if(sflag[i]!=0){
+	if(board[*x + (j * vec_x[i])][*y + (j * vec_y[i])] == B) break;
+	svec[i]++;
+      }
+    }
+    // printf("debug:%d\n",svec[i]);
+  }
+}
+
 
