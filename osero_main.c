@@ -8,7 +8,7 @@
 
 const int vec_x[8]={-1,-1,0,1,1,1,0,-1};
 const int vec_y[8]={0,1,1,1,0,-1,-1,-1};
-int sflag[8]; //その方向に返せるかどうかのフラグ
+//int sflag[8]; //その方向に返せるかどうかのフラグ
 int svec[8]; //返せる駒数 格納
 int board[NUM][NUM]={{OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT,OUT},
 		     {OUT,NO,NO,NO,NO,NO,NO,NO,NO,OUT}, 
@@ -106,28 +106,41 @@ void Input(int *x,int *y){
 
 int Search_1(int *x,int *y){ //B
   int i,j;
+  int n;
+  int sflag;
   switch(board[*x][*y]){
   case B: puts("err : おけません"); return(-1);
   case W: puts("err : おけません"); return(-1);
   case NO:
-    //探索前のチェック
-    for(i=0;i<8;i++)
+   /*  探索前のチェック */
+   /* for(j=0;j<8;j++){ */
+   /* 	if((board[*x + vec_x[j]][*y + vec_y[j]] != NO) && (board[*x + vec_x[j]][*y + vec_y[j]] != B)){ */
+   /* 	  sflag[j]=1; */
+   /* 	} */
+   /*    	printf("debug:%d\n",sflag[i]); */
+   /*   } */
+    
+    for(i=0;i<8;i++){
+      n=1;
       for(j=0;j<8;j++){
-	if((board[*x + vec_x[j]][*y + vec_y[j]] != NO) && (board[*x + vec_x[j]][*y + vec_y[j]] != B)){
-	  sflag[i]=1;
+	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == NO) break;
+	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == OUT) break;
+	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == B) break;
+	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == W){
+	  if(board[*x + (n+1 * vec_x[i])][*y + (n+1 * vec_y[i])] == B){
+	    svec[i]=j;
+	  }
+	  n++;
 	}
       }
-    printf("debug:%d\n",sflag[i]);
-  }
-
-  for(i=0;i<8;i++){
-    for(j=0;j<8;j++){
-      if(sflag[i]!=0){
-	if(board[*x + (j * vec_x[i])][*y + (j * vec_y[i])] == B) break;
-	svec[i]++;
-      }
+	/*	if(((board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] != B) && (board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] != NO)) && (board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] != OUT)) { */
+      /* 	  svec[i]=j; */
+      /* 	  break; */
+      /* 	} */
+      /* 	n++; */
+      /* } */
+      printf("debug:%d\n",svec[i]);
     }
-    // printf("debug:%d\n",svec[i]);
   }
 }
 
