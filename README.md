@@ -1,2 +1,4 @@
-# console osero Program
-開発中
+# Console osero Program
+
+アルゴリズムとデータ構造のレポート
+
