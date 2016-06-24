@@ -37,10 +37,11 @@ typedef struct{
 }player2;
 
 void init(player1 *pl1,player2 *pl2);
+void init_svec(void);
 void display(player1 *pl1,player2 *pl2);
 void Input(int *x,int *y);
 int Search_1(int *x,int *y);
-int Search_2(void);
+int Search_2(int *x,int *y);
 int Select(void);
 int Put(void);
 int Change(void);
@@ -56,6 +57,8 @@ main(){
   display(&pl1,&pl2);
   Input(&x,&y);
   Search_1(&x,&y);
+  Search_2(&x,&y);
+  
 
   turn++;
 }
@@ -76,6 +79,11 @@ void init(player1 *pl1,player2 *pl2){
 
   //debug
   //     printf("pl1.na:%s,pl2.na:%s,pl1.co:%d,pl2.co:%d",pl1.name,pl2.name,pl1.count,pl2.count);
+}
+
+void init_svec(void){
+  int i;
+  for(i=0;i<8;i++)svec[i]=0;
 }
 
 void display(player1 *pl1,player2 *pl2){
@@ -108,9 +116,11 @@ int Search_1(int *x,int *y){ //B
   int i,j;
   int n;
   int sflag;
+  init_svec();
   switch(board[*x][*y]){
   case B: puts("err : おけません"); return(-1);
   case W: puts("err : おけません"); return(-1);
+  case OUT: puts("err : おけません"); return(-1);
   case NO:
    /*  探索前のチェック */
    /* for(j=0;j<8;j++){ */
@@ -122,12 +132,12 @@ int Search_1(int *x,int *y){ //B
     
     for(i=0;i<8;i++){
       n=1;
-      for(j=0;j<8;j++){
+      for(j=1;j<=8;j++){
 	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == NO) break;
 	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == OUT) break;
 	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == B) break;
 	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == W){
-	  if(board[*x + (n+1 * vec_x[i])][*y + (n+1 * vec_y[i])] == B){
+	  if(board[*x + ((n+1) * vec_x[i])][*y + ((n+1) * vec_y[i])] == B){
 	    svec[i]=j;
 	  }
 	  n++;
@@ -139,9 +149,56 @@ int Search_1(int *x,int *y){ //B
       /* 	} */
       /* 	n++; */
       /* } */
-      printf("debug:%d\n",svec[i]);
+           printf("debug:%d\n",svec[i]);
     }
+    break;
+  default:puts("err : おけません"); return(-1);
   }
 }
+
+int Search_2(int *x,int *y){ //W
+  int i,j;
+  int n;
+  int sflag;
+  init_svec();
+  switch(board[*x][*y]){
+  case B: puts("err : おけません"); return(-1);
+  case W: puts("err : おけません"); return(-1);
+  case OUT: puts("err : おけません"); return(-1);
+  case NO:
+    /*  探索前のチェック */
+    /* for(j=0;j<8;j++){ */
+    /* 	if((board[*x + vec_x[j]][*y + vec_y[j]] != NO) && (board[*x + vec_x[j]][*y + vec_y[j]] != B)){ */
+    /* 	  sflag[j]=1; */
+    /* 	} */
+    /*    	printf("debug:%d\n",sflag[i]); */
+    /*   } */
+    
+    for(i=0;i<8;i++){
+      n=1;
+      for(j=1;j<=8;j++){
+	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == NO) break;
+	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == OUT) break;
+	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == W) break;
+	if(board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] == B){
+	  if(board[*x + ((n+1) * vec_x[i])][*y + ((n+1) * vec_y[i])] == W){
+	    svec[i]=j;
+	  }
+	  n++;
+	}
+      }
+      /*	if(((board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] != B) && (board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] != NO)) && (board[*x + (n * vec_x[i])][*y + (n * vec_y[i])] != OUT)) { */
+      /* 	  svec[i]=j; */
+      /* 	  break; */
+      /* 	} */
+      /* 	n++; */
+      /* } */
+      printf("debug:%d\n",svec[i]);
+    }
+    break;
+  default:puts("err : おけません"); return(-1);
+  }
+}
+
 
 
